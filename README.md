@@ -18,8 +18,8 @@ Configuration is slightly differ from original [rocketchat-jira-trigger](https:/
 So it isn't substituted one by one.  
 There is plenty of configuration options, but the only required parameter is jira credentials. 
 For all other options there are reasonable defaults.  
-For [minimal](https://github.com/pru-mike/rocketchat-jira-webhook/example/minimal.toml)
-and [all](https://github.com/pru-mike/rocketchat-jira-webhook/example/everything.toml) 
+For [minimal](https://github.com/pru-mike/rocketchat-jira-webhook/blob/master/example/minimal.toml)
+and [all](https://github.com/pru-mike/rocketchat-jira-webhook/blob/master/example/everything.toml) 
 options see configuration examples.
 
 Usage
