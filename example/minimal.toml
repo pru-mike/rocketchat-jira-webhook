@@ -1,0 +1,4 @@
+[jira]
+url = "https://jira.mycompany.com"
+username = "jirauser"
+password = "jirapassword"
