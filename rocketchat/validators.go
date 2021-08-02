@@ -104,8 +104,8 @@ func ValidateEdits(config *config.Rocketchat) func(validator.FieldLevel) bool {
 
 func ValidateBots(config *config.Rocketchat) func(validator.FieldLevel) bool {
 	return func(fl validator.FieldLevel) bool {
-		isEdited := fl.Field().Bool()
-		return !isEdited || config.AllowBots
+		isBot := fl.Field().Bool()
+		return !isBot || config.AllowBots
 	}
 }
 

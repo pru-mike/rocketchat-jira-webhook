@@ -56,7 +56,7 @@ whitelisted_channels = []
 # No messages from these channels will be considered
 blacklisted_channels = []
 # Whether to ignore all edited message
-allow_edits = true
+allow_edits = false
 # Whether to ignore all messages from bots
 allow_bots = false
 # Only this project keys will be gathered from jira unless blacklisted, empty all keys allowed
