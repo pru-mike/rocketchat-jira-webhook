@@ -21,13 +21,16 @@ timeout = "30s"
 [message]
 # Override username, user must have message-impersonate permission, Default not to override
 username = "JIRA"
-# Override icon, Default not to override
-icon_url = "https://confluence.atlassian.com/alldoc/files/169118009/169050326/4/1260504581635/jira_logo.png"
+# Override icon, must be valid url or predefined value, Default not to override.
+# Several predefined icon avalible with following parameters: blue-jira-software blue-jira contained-blue-jira-software
+# contained-blue-jira contained-neutral-jira-software contained-neutral-jira contained-white-jira-software
+# contained-white-jira neutral-jira-software neutral-jira
+icon_url = "blue-jira-software"
 # The max length of the JIRA description until truncation happens
 max_text_length = 600
 # Color attachments according to issue priority
 priority_colors = true
-# Fallback color when priority_colors is false or priority not recognized
+# Fallback color when priority_colors is false
 default_color = "#205081"
 # Priority id precedence from highest to lowest, so 1=blocker, 2=critical,..,5=trivial
 priority_id_precedence = [1,2,3,4,5]

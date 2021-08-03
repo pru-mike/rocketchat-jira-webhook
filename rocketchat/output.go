@@ -6,7 +6,6 @@ import (
 	"github.com/pru-mike/rocketchat-jira-webhook/jira"
 	"golang.org/x/text/message"
 	"html"
-	"math/rand"
 	"strconv"
 	"unicode/utf8"
 )
@@ -21,6 +20,7 @@ type Output struct {
 
 type Attachment struct {
 	AuthorName string  `json:"author_name"`
+	AuthorLink string  `json:"author_link,omitempty"`
 	Collapsed  bool    `json:"collapsed"`
 	Title      string  `json:"title"`
 	TitleLink  string  `json:"title_link"`
@@ -101,11 +101,8 @@ func (b *OutputBuilder) New(issues []*jira.Issue) *Output {
 }
 
 func (b *OutputBuilder) addQuote(attachment *Attachment) {
-	if len(assets.Quotes) > 0 {
-		if b.QuoteProbability > rand.Float32() {
-			q := assets.Quotes[rand.Intn(len(assets.Quotes))]
-			attachment.addField(q.Author, q.Quote, false)
-		}
+	if ok, q := assets.GetQuoteWithProb(b.QuoteProbability); ok {
+		attachment.addField(q.Author, q.Quote, false)
 	}
 }
 

@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
+	"github.com/pru-mike/rocketchat-jira-webhook/assets"
 	"github.com/pru-mike/rocketchat-jira-webhook/logger"
 	"github.com/spf13/viper"
 	"golang.org/x/text/language"
@@ -155,6 +156,10 @@ func Load(configFile string) (*Config, error) {
 	}
 	if config.Message.PriorityColors && !contains(Priority, config.Message.Fields) {
 		config.Jira.requestFields = append(config.Jira.requestFields, Priority)
+	}
+
+	if logo, ok := assets.GetLogo(config.Message.IconURL); ok {
+		config.Message.IconURL = logo
 	}
 
 	return &config, nil
