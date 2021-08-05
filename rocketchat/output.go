@@ -119,31 +119,59 @@ func getNextElem(src []string, n uint) string {
 	return ""
 }
 
-func (b *OutputBuilder) getNextLogo(logos []string, n int) string {
+func getNextLogo(logos []string, n int) string {
 	logo, _ := assets.GetLogo(getNextElem(logos, uint(n)))
 	return logo
 }
 
-func (b *OutputBuilder) makeNextAuthorIconGetter() func() string {
+func (b *OutputBuilder) makeNextAuthorIconGetter() func(issue *jira.Issue) string {
 	if len(b.AuthorIcons) == 0 {
-		return func() string {
+		return func(issue *jira.Issue) string {
 			return ""
 		}
 	}
-	if len(b.AuthorIcons) == 1 {
-		return func() string {
-			return b.AuthorIcons[0]
+	authorIconsGetter := b.makeNextIconGetter(b.AuthorIcons)
+
+	if len(b.InactiveAuthorIcons) == 0 {
+		return func(_ *jira.Issue) string {
+			return authorIconsGetter()
 		}
 	}
-	authorIcons := make([]string, len(b.AuthorIcons))
-	copy(authorIcons, b.AuthorIcons)
-	rand.Shuffle(len(authorIcons), func(i, j int) {
-		authorIcons[i], authorIcons[j] = authorIcons[j], authorIcons[i]
+
+	inactiveAuthorIconGetter := b.makeNextIconGetter(b.InactiveAuthorIcons)
+	inactiveAuthor := b.InactiveAuthor
+	return func(issue *jira.Issue) string {
+		var isActive bool
+		switch inactiveAuthor {
+		case config.Assignee:
+			isActive = issue.Assignee().Active
+		case config.Creator:
+			isActive = issue.Creator().Active
+		default:
+			isActive = issue.Reporter().Active
+		}
+		if isActive {
+			return authorIconsGetter()
+		}
+		return inactiveAuthorIconGetter()
+	}
+}
+
+func (b *OutputBuilder) makeNextIconGetter(icons []string) func() string {
+	if len(icons) == 1 {
+		return func() string {
+			return getNextLogo(icons, 0)
+		}
+	}
+	iconsCopy := make([]string, len(icons))
+	copy(iconsCopy, icons)
+	rand.Shuffle(len(iconsCopy), func(i, j int) {
+		iconsCopy[i], iconsCopy[j] = iconsCopy[j], iconsCopy[i]
 	})
-	i := rand.Intn(len(authorIcons))
+	i := rand.Intn(len(iconsCopy))
 	return func() string {
 		i++
-		return b.getNextLogo(authorIcons, i)
+		return getNextLogo(iconsCopy, i)
 	}
 }
 
@@ -158,7 +186,7 @@ func (b *OutputBuilder) New(issues []*jira.Issue) *Output {
 			Title:      b.getTitle(issue),
 			TitleLink:  issue.Link(),
 			AuthorName: b.getAuthor(issue),
-			AuthorIcon: getNextAuthorIcon(),
+			AuthorIcon: getNextAuthorIcon(issue),
 			Text:       b.unescapeHTML(b.trim(issue.Description())),
 			Color:      b.color(issue.Priority()),
 		}

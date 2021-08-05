@@ -48,6 +48,8 @@ show_author = true
 # List of authors icons, will be choosed randomly. Could be URLs or predefined icon value.
 # By default every stickman* icon used. If empty icon does not displayed.
 author_icons = ["stickman", "stickman2", "stickman-apple", "stickman-bike", "stickman-excercise"]
+# List of inactive authors icons. If empty author_icons will be used.
+inactive_author_icons = ["candle", "tombstone", "gallows", "coffin"]
 
 [rocketchat]
 # Allowed Rocket.Chat tokens. An empty array means all tokens are allowed

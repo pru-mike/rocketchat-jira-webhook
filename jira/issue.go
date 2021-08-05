@@ -24,6 +24,7 @@ func (p *Priority) GetID() int {
 type Person struct {
 	Name        string `json:"name"`
 	DisplayName string `json:"displayName"`
+	Active      bool   `json:"active"`
 }
 
 func (p *Person) JiraName() string {

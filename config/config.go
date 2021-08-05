@@ -89,6 +89,8 @@ type Message struct {
 	ShowAuthor           bool     `mapstructure:"show_author"`
 	AuthorTemplate       string   `mapstructure:"author_template"`
 	AuthorIcons          []string `mapstructure:"author_icons"`
+	InactiveAuthor       string   `mapstructure:"inactive_author"`
+	InactiveAuthorIcons  []string `mapstructure:"inactive_author_icons"`
 }
 
 func (m *Message) LangTag() language.Tag {
@@ -133,6 +135,8 @@ func setDefaults() {
 		"stickman-yoga", "stickman-yoga2", "stickman-yoga3", "stickman-yoga4", "stickman-yoga5", "stickman",
 		"stickman2",
 	})
+	viper.SetDefault("message.inactive_author", "reporter")
+	viper.SetDefault("message.inactive_author_icons", []string{"candle"})
 }
 
 func Load(configFile string) (*Config, error) {
