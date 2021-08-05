@@ -1,12 +1,16 @@
 package rocketchat
 
 import (
+	"bytes"
 	"github.com/pru-mike/rocketchat-jira-webhook/assets"
 	"github.com/pru-mike/rocketchat-jira-webhook/config"
 	"github.com/pru-mike/rocketchat-jira-webhook/jira"
+	"github.com/pru-mike/rocketchat-jira-webhook/logger"
 	"golang.org/x/text/message"
 	"html"
+	"math/rand"
 	"strconv"
+	"text/template"
 	"unicode/utf8"
 )
 
@@ -19,14 +23,18 @@ type Output struct {
 }
 
 type Attachment struct {
-	AuthorName string  `json:"author_name"`
-	AuthorLink string  `json:"author_link,omitempty"`
-	Collapsed  bool    `json:"collapsed"`
-	Title      string  `json:"title"`
-	TitleLink  string  `json:"title_link"`
-	Color      string  `json:"color"`
-	Text       string  `json:"text"`
-	Fields     []Field `json:"fields"`
+	AuthorName  string  `json:"author_name"`
+	AuthorLink  string  `json:"author_link,omitempty"`
+	AuthorIcon  string  `json:"author_icon,omitempty"`
+	Collapsed   bool    `json:"collapsed"`
+	Title       string  `json:"title"`
+	TitleLink   string  `json:"title_link,omitempty"`
+	MessageLink string  `json:"message_link,omitempty"`
+	ImageURL    string  `json:"image_url,omitempty"`
+	ThumbURL    string  `json:"thumb_url,omitempty"`
+	Color       string  `json:"color"`
+	Text        string  `json:"text"`
+	Fields      []Field `json:"fields"`
 }
 
 func (attachment *Attachment) addShortField(title string, value string) {
@@ -51,6 +59,8 @@ type OutputBuilder struct {
 	*config.Message
 	priorityToColor map[int]string
 	printer         *message.Printer
+	titleTmpl       *template.Template
+	authorTmpl      *template.Template
 }
 
 func NewOutputBuilder(cfg *config.Message) *OutputBuilder {
@@ -69,6 +79,8 @@ func NewOutputBuilder(cfg *config.Message) *OutputBuilder {
 		cfg,
 		priorityToColor,
 		message.NewPrinter(cfg.LangTag()),
+		template.Must(template.New("titleTmpl").Parse(cfg.TitleTemplate)),
+		template.Must(template.New("authorTmpl").Parse(cfg.AuthorTemplate)),
 	}
 }
 
@@ -80,17 +92,75 @@ func (b *OutputBuilder) NewMsg(text string) *Output {
 	}
 }
 
+func (b *OutputBuilder) getTitle(issue *jira.Issue) string {
+	var title bytes.Buffer
+	err := b.titleTmpl.Execute(&title, issue)
+	if err != nil {
+		logger.Errorf("can't execute title_template %v", err)
+		return b.unescapeHTML(issue.DefaultTitle())
+	}
+	return b.unescapeHTML(title.String())
+}
+
+func (b *OutputBuilder) getAuthor(issue *jira.Issue) string {
+	var author bytes.Buffer
+	err := b.authorTmpl.Execute(&author, issue)
+	if err != nil {
+		logger.Errorf("can't execute author_template %v", err)
+		return ""
+	}
+	return author.String()
+}
+
+func getNextElem(src []string, n uint) string {
+	if len(src) > 0 {
+		return src[n%uint(len(src))]
+	}
+	return ""
+}
+
+func (b *OutputBuilder) getNextLogo(logos []string, n int) string {
+	logo, _ := assets.GetLogo(getNextElem(logos, uint(n)))
+	return logo
+}
+
+func (b *OutputBuilder) makeNextAuthorIconGetter() func() string {
+	if len(b.AuthorIcons) == 0 {
+		return func() string {
+			return ""
+		}
+	}
+	if len(b.AuthorIcons) == 1 {
+		return func() string {
+			return b.AuthorIcons[0]
+		}
+	}
+	authorIcons := make([]string, len(b.AuthorIcons))
+	copy(authorIcons, b.AuthorIcons)
+	rand.Shuffle(len(authorIcons), func(i, j int) {
+		authorIcons[i], authorIcons[j] = authorIcons[j], authorIcons[i]
+	})
+	i := rand.Intn(len(authorIcons))
+	return func() string {
+		i++
+		return b.getNextLogo(authorIcons, i)
+	}
+}
+
 func (b *OutputBuilder) New(issues []*jira.Issue) *Output {
 
 	msg := b.NewMsg(b.printer.Sprintf("Found %d issue", len(issues)))
 
+	getNextAuthorIcon := b.makeNextAuthorIconGetter()
 	for _, issue := range issues {
 		attachment := Attachment{
-			Collapsed: true,
-			Title:     b.unescapeHTML(issue.Title()),
-			TitleLink: issue.Link(),
-			Text:      b.unescapeHTML(b.trim(issue.Description())),
-			Color:     b.color(issue.Priority()),
+			Collapsed:  true,
+			Title:      b.getTitle(issue),
+			TitleLink:  issue.Link(),
+			AuthorName: b.getAuthor(issue),
+			AuthorIcon: getNextAuthorIcon(),
+			Text:       b.unescapeHTML(b.trim(issue.Description())),
+			Color:      b.color(issue.Priority()),
 		}
 		b.addFields(issue, &attachment)
 		b.addQuote(&attachment)

@@ -21,10 +21,7 @@ timeout = "30s"
 [message]
 # Override username, user must have message-impersonate permission, Default not to override
 username = "JIRA"
-# Override icon, must be valid url or predefined value, Default not to override.
-# Several predefined icon avalible with following parameters: blue-jira-software blue-jira contained-blue-jira-software
-# contained-blue-jira contained-neutral-jira-software contained-neutral-jira contained-white-jira-software
-# contained-white-jira neutral-jira-software neutral-jira
+# Override icon, must be valid url or predefined icon value, Default not to override.
 icon_url = "blue-jira-software"
 # The max length of the JIRA description until truncation happens
 max_text_length = 600
@@ -33,11 +30,11 @@ priority_colors = true
 # Fallback color when priority_colors is false
 default_color = "#205081"
 # Priority id precedence from highest to lowest, so 1=blocker, 2=critical,..,5=trivial
-priority_id_precedence = [1,2,3,4,5]
+priority_id_precedence = [1, 2, 3, 4, 5]
 # Associate colors to priority in order from highest to lowest e.g. Blocker Critical Major Minor Trivial
-colors_by_priority = [ "#FF4437", "#D04437", "#E3833C", "#F6C342", "#707070" ]
+colors_by_priority = ["#FF4437", "#D04437", "#E3833C", "#F6C342", "#707070"]
 # Message fields to print, additionaly supported fields is Creator, Watches, Components, Labels
-fields = ["Priority", "Type", "Status",  "Resolution",  "Assignee", "Reporter", "Created", "Updated"]
+fields = ["Priority", "Type", "Status", "Resolution", "Assignee", "Reporter", "Created", "Updated"]
 # Use peoples real names instead of jira usernames
 use_real_names = true
 # Date format layout according to https://pkg.go.dev/time#Time.Format
@@ -46,6 +43,11 @@ datetime_layout = "02/01/2006 15:04"
 msg_lang = "en"
 # Should be or not html unescaping on title and text fields
 unescape_html = true
+# Show author for issues
+show_author = true
+# List of authors icons, will be choosed randomly. Could be URLs or predefined icon value.
+# By default every stickman* icon used. If empty icon does not displayed.
+author_icons = ["stickman", "stickman2", "stickman-apple", "stickman-bike", "stickman-excercise"]
 
 [rocketchat]
 # Allowed Rocket.Chat tokens. An empty array means all tokens are allowed

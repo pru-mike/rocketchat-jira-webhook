@@ -103,8 +103,16 @@ func (i *Issue) Link() string {
 	return i.browseURL + "/" + i.Key
 }
 
-func (i *Issue) Title() string {
+func (i *Issue) DefaultTitle() string {
 	return i.Key + " " + i.Fields.Summary
+}
+
+func (i *Issue) GetKey() string {
+	return i.Key
+}
+
+func (i *Issue) GetSummary() string {
+	return i.Fields.Summary
 }
 
 func (i *Issue) Description() string {

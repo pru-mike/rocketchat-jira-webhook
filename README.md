@@ -35,6 +35,17 @@ For [minimal](https://github.com/pru-mike/rocketchat-jira-webhook/blob/master/ex
 and [all](https://github.com/pru-mike/rocketchat-jira-webhook/blob/master/example/everything.toml) 
 options see configuration examples.
 
+#### Predefined icon value for avatar configuration
+
+alien-slugs alien blue-jira-software blue-jira contained-blue-jira-software contained-blue-jira 
+contained-neutral-jira-software contained-neutral-jira contained-white-jira-software contained-white-jira 
+neutral-jira-software neutral-jira stickman-apple stickman-bike stickman-excercise
+stickman-excercise2 stickman-excercise3 stickman-heart stickman-heart2 stickman-jump stickman-mail stickman-massage
+stickman-massage2 stickman-meditation stickman-relax stickman-run stickman-sauna stickman-shower stickman-spa
+stickman-sport stickman-sport2 stickman-study stickman-swimmer stickman-treadmil stickman-walker
+stickman-weightlifting stickman-yoga stickman-yoga2 stickman-yoga3 stickman-yoga4 stickman-yoga5
+stickman stickman2
+
 Usage
 -----
 The same as [rocketchat-jira-trigger](https://github.com/gustavkarlsson/rocketchat-jira-trigger).  

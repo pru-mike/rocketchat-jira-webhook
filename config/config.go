@@ -85,6 +85,10 @@ type Message struct {
 	MsgLang              string   `mapstructure:"msg_lang"`
 	QuoteProbability     float32  `mapstructure:"quote_prob"`
 	UnescapeHTML         bool     `mapstructure:"unescape_html"`
+	TitleTemplate        string   `mapstructure:"title_template"`
+	ShowAuthor           bool     `mapstructure:"show_author"`
+	AuthorTemplate       string   `mapstructure:"author_template"`
+	AuthorIcons          []string `mapstructure:"author_icons"`
 }
 
 func (m *Message) LangTag() language.Tag {
@@ -100,15 +104,7 @@ func (c *Config) ListenAddr() string {
 	return fmt.Sprintf("%s:%d", c.App.Host, c.App.Port)
 }
 
-func Load(configFile string) (*Config, error) {
-	if configFile != "" {
-		viper.SetConfigFile(configFile)
-	} else {
-		viper.SetConfigName("config")
-		viper.SetConfigType("toml")
-		viper.AddConfigPath("/etc/github.com/pru-mike/rocketchat-jira-webhook")
-		viper.AddConfigPath(".")
-	}
+func setDefaults() {
 	viper.SetDefault("app.host", "0.0.0.0")
 	viper.SetDefault("app.port", "4567")
 	viper.SetDefault("app.log_level", "info")
@@ -125,6 +121,30 @@ func Load(configFile string) (*Config, error) {
 	viper.SetDefault("message.msg_lang", "en")
 	viper.SetDefault("message.quote_prob", 0.009)
 	viper.SetDefault("message.unescape_html", true)
+	viper.SetDefault("message.title_template", "{{.GetKey}} {{.GetSummary}}")
+	viper.SetDefault("message.show_author", true)
+	viper.SetDefault("message.author_template", "{{ .Reporter.DisplayName }}")
+	viper.SetDefault("message.author_icons", []string{
+		"stickman-apple", "stickman-bike", "stickman-excercise", "stickman-excercise2",
+		"stickman-excercise3", "stickman-heart", "stickman-heart2", "stickman-jump", "stickman-mail",
+		"stickman-massage", "stickman-massage2", "stickman-meditation", "stickman-relax", "stickman-run",
+		"stickman-sauna", "stickman-shower", "stickman-spa", "stickman-sport", "stickman-sport2",
+		"stickman-study", "stickman-swimmer", "stickman-treadmil", "stickman-walker", "stickman-weightlifting",
+		"stickman-yoga", "stickman-yoga2", "stickman-yoga3", "stickman-yoga4", "stickman-yoga5", "stickman",
+		"stickman2",
+	})
+}
+
+func Load(configFile string) (*Config, error) {
+	if configFile != "" {
+		viper.SetConfigFile(configFile)
+	} else {
+		viper.SetConfigName("config")
+		viper.SetConfigType("toml")
+		viper.AddConfigPath("/etc/github.com/pru-mike/rocketchat-jira-webhook")
+		viper.AddConfigPath(".")
+	}
+	setDefaults()
 	err := viper.ReadInConfig()
 	if err != nil {
 		return nil, fmt.Errorf("can't read configuration file: %w", err)
@@ -160,6 +180,13 @@ func Load(configFile string) (*Config, error) {
 
 	if logo, ok := assets.GetLogo(config.Message.IconURL); ok {
 		config.Message.IconURL = logo
+	}
+
+	if !config.Message.ShowAuthor {
+		config.Message.AuthorTemplate = ""
+		config.Message.AuthorIcons = []string{}
+	} else if !contains(Reporter, config.Message.Fields) {
+		config.Jira.requestFields = append(config.Jira.requestFields, Reporter)
 	}
 
 	return &config, nil
