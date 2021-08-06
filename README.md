@@ -4,6 +4,8 @@ It's [Golang](https://golang.org/) port of [rocketchat-jira-trigger](https://git
 Outgoing [Rocket.Chat](https://rocket.chat) webhook integration that summarizes mentioned 
 [JIRA](https://www.atlassian.com/software/jira) issues.
 
+![Example](example/example.png)
+
 Installation
 ------------
 You need go 1.16 or newer.

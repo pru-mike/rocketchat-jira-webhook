@@ -91,6 +91,7 @@ type Message struct {
 	AuthorIcons          []string `mapstructure:"author_icons"`
 	InactiveAuthor       string   `mapstructure:"inactive_author"`
 	InactiveAuthorIcons  []string `mapstructure:"inactive_author_icons"`
+	SortByPrecedence     bool     `mapstructure:"sort_by_precedence"`
 }
 
 func (m *Message) LangTag() language.Tag {
@@ -119,7 +120,7 @@ func setDefaults() {
 	viper.SetDefault("message.use_real_names", true)
 	viper.SetDefault("message.datetime_layout", "02/01/2006 15:04")
 	viper.SetDefault("message.priority_id_precedence", []int{1, 2, 3, 4, 5})
-	viper.SetDefault("message.colors_by_priority", []string{"#FF4437", "#D04437", "#E3833C", "#F6C342", "#707070"})
+	viper.SetDefault("message.colors_by_priority", []string{"#000000", "#ff5500", "#F6C342", "#00ff66", "#0095ff"})
 	viper.SetDefault("message.msg_lang", "en")
 	viper.SetDefault("message.quote_prob", 0.009)
 	viper.SetDefault("message.unescape_html", true)
@@ -137,6 +138,7 @@ func setDefaults() {
 	})
 	viper.SetDefault("message.inactive_author", "reporter")
 	viper.SetDefault("message.inactive_author_icons", []string{"candle"})
+	viper.SetDefault("message.sort_by_precedence", true)
 }
 
 func Load(configFile string) (*Config, error) {

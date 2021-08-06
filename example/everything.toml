@@ -50,6 +50,8 @@ show_author = true
 author_icons = ["stickman", "stickman2", "stickman-apple", "stickman-bike", "stickman-excercise"]
 # List of inactive authors icons. If empty author_icons will be used.
 inactive_author_icons = ["candle", "tombstone", "gallows", "coffin"]
+# Task will be sorted by precedence
+sort_by_precedence = true
 
 [rocketchat]
 # Allowed Rocket.Chat tokens. An empty array means all tokens are allowed

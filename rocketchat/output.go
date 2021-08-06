@@ -9,6 +9,7 @@ import (
 	"golang.org/x/text/message"
 	"html"
 	"math/rand"
+	"sort"
 	"strconv"
 	"text/template"
 	"unicode/utf8"
@@ -57,27 +58,33 @@ type Field struct {
 
 type OutputBuilder struct {
 	*config.Message
-	priorityToColor map[int]string
-	printer         *message.Printer
-	titleTmpl       *template.Template
-	authorTmpl      *template.Template
+	priorityToColor      map[int]string
+	priorityToPrecedence map[int]int
+	printer              *message.Printer
+	titleTmpl            *template.Template
+	authorTmpl           *template.Template
 }
 
 func NewOutputBuilder(cfg *config.Message) *OutputBuilder {
 
 	priorityToColor := make(map[int]string, len(cfg.PriorityIDPrecedence))
+	priorityToPrecedence := make(map[int]int, len(cfg.PriorityIDPrecedence))
 	var i int
-	for _, priority := range cfg.PriorityIDPrecedence {
-		if i > len(cfg.ColorsByPriority[i]) {
+	for p, priority := range cfg.PriorityIDPrecedence {
+		priorityToPrecedence[priority] = p
+		if i > len(cfg.ColorsByPriority) {
 			i = 0
 		}
-		priorityToColor[priority] = cfg.ColorsByPriority[i]
+		if len(cfg.ColorsByPriority) > 0 {
+			priorityToColor[priority] = cfg.ColorsByPriority[i]
+		}
 		i++
 	}
 
 	return &OutputBuilder{
 		cfg,
 		priorityToColor,
+		priorityToPrecedence,
 		message.NewPrinter(cfg.LangTag()),
 		template.Must(template.New("titleTmpl").Parse(cfg.TitleTemplate)),
 		template.Must(template.New("authorTmpl").Parse(cfg.AuthorTemplate)),
@@ -178,6 +185,19 @@ func (b *OutputBuilder) makeNextIconGetter(icons []string) func() string {
 func (b *OutputBuilder) New(issues []*jira.Issue) *Output {
 
 	msg := b.NewMsg(b.printer.Sprintf("Found %d issue", len(issues)))
+
+	if b.SortByPrecedence {
+		sort.Slice(issues, func(i, j int) bool {
+			pri1 := issues[j].Priority().GetID()
+			pri2 := issues[i].Priority().GetID()
+			pre1, ok1 := b.priorityToPrecedence[pri1]
+			pre2, ok2 := b.priorityToPrecedence[pri2]
+			if ok1 && ok2 {
+				return pre1 > pre2
+			}
+			return pri1 > pri2
+		})
+	}
 
 	getNextAuthorIcon := b.makeNextAuthorIconGetter()
 	for _, issue := range issues {
