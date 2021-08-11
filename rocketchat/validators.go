@@ -9,8 +9,8 @@ import (
 
 type Validate struct {
 	*validator.Validate
-	blacklistedProjectKeys []string
-	whitelistedProjectKeys []string
+	blacklistedJiraProjectKeys []string
+	whitelistedJiraProjectKeys []string
 }
 
 func SetupValidator(cfg *config.Rocketchat) *Validate {
@@ -30,18 +30,18 @@ func SetupValidator(cfg *config.Rocketchat) *Validate {
 
 	return &Validate{
 		validate,
-		cfg.BlacklistedProjectKeys,
-		cfg.WhitelistedProjectKeys,
+		cfg.BlacklistedJiraProjectKeys,
+		cfg.WhitelistedJiraProjectKeys,
 	}
 }
 
-func (v *Validate) ValidateKeys(keys []string) []string {
-	if len(v.blacklistedProjectKeys) > 0 {
+func (v *Validate) ValidateJiraKeys(keys []string) []string {
+	if len(v.blacklistedJiraProjectKeys) > 0 {
 		var i int
 	BlackListLoop:
 		for _, key := range keys {
 			prjKey := jira.StripKey(key)
-			for _, forbiddenKey := range v.blacklistedProjectKeys {
+			for _, forbiddenKey := range v.blacklistedJiraProjectKeys {
 				if prjKey == forbiddenKey {
 					logger.Debugf("forbidden key with blacklist key %s", key)
 					continue BlackListLoop
@@ -52,12 +52,12 @@ func (v *Validate) ValidateKeys(keys []string) []string {
 		}
 		keys = keys[:i]
 	}
-	if len(v.whitelistedProjectKeys) > 0 {
+	if len(v.whitelistedJiraProjectKeys) > 0 {
 		var i int
 		for _, key := range keys {
 			prjKey := jira.StripKey(key)
 			var allowed bool
-			for _, allowedKey := range v.whitelistedProjectKeys {
+			for _, allowedKey := range v.whitelistedJiraProjectKeys {
 				if prjKey == allowedKey {
 					allowed = true
 					break

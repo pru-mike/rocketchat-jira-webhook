@@ -50,7 +50,7 @@ func TestParseKeys(t *testing.T) {
 	for _, test := range tests {
 		test := test
 		t.Run(test.request, func(t *testing.T) {
-			result := ParseKeys(test.request)
+			result := parseKeys(findKeysRegexp, test.request)
 			if strings.Join(result, ",") != strings.Join(test.result, ",") {
 				t.Errorf("got %q, whant %q", result, test.result)
 			}

@@ -53,7 +53,7 @@ func Debug(v ...interface{}) {
 
 func Debugf(format string, v ...interface{}) {
 	if logger.level >= DebugLevel {
-		logger.Printf("DEBUG "+format, v)
+		logger.Printf("DEBUG "+format, v...)
 	}
 }
 
@@ -65,7 +65,7 @@ func Info(v ...interface{}) {
 
 func Infof(format string, v ...interface{}) {
 	if logger.level >= InfoLevel {
-		logger.Printf("INFO "+format, v)
+		logger.Printf("INFO "+format, v...)
 	}
 }
 
@@ -77,7 +77,7 @@ func Error(v ...interface{}) {
 
 func Errorf(format string, v ...interface{}) {
 	if logger.level >= ErrorLevel {
-		logger.Printf("ERROR "+format, v)
+		logger.Printf("ERROR "+format, v...)
 	}
 }
 
@@ -86,5 +86,5 @@ func Fatal(v ...interface{}) {
 }
 
 func Fatalf(format string, v ...interface{}) {
-	logger.Fatalf("FATAL "+format, v)
+	logger.Fatalf("FATAL "+format, v...)
 }

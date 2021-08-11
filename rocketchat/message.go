@@ -44,6 +44,37 @@ var translates = []translate{
 			plural.Other, "%[1]d Aufgaben gefunden.",
 		),
 	},
+
+	{
+		"en", "Found %d doc",
+		plural.Selectf(1, "%d",
+			"=1", "Found 1 document.",
+			plural.Other, "Found %[1]d documents.",
+		),
+	},
+	{
+		"ru", "Found %d doc",
+		plural.Selectf(1, "%d",
+			plural.One, "Найдена %[1]d документ.",
+			plural.Few, "Найдено %[1]d документа.",
+			plural.Other, "Найдено %[1]d документов.",
+		),
+	},
+	{
+		"fr", "Found %d doc",
+		plural.Selectf(1, "%d",
+			"=1", "1 document trouvée.",
+			plural.Other, "Trouvé %[1]d documents.",
+		),
+	},
+	{
+		"de", "Found %d pages",
+		plural.Selectf(1, "%d",
+			"=1", "1 dokument gefunden.",
+			plural.Few, "%[1]d dokumente gefunden.",
+			plural.Other, "%[1]d dokument gefunden.",
+		),
+	},
 }
 
 func init() {

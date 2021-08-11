@@ -139,27 +139,27 @@ func TestValidateUserStructLevel(t *testing.T) {
 
 func TestValidateKeys(t *testing.T) {
 	v := SetupValidator(&config.Rocketchat{
-		WhitelistedProjectKeys: []string{},
-		BlacklistedProjectKeys: []string{},
+		WhitelistedJiraProjectKeys: []string{},
+		BlacklistedJiraProjectKeys: []string{},
 	})
-	assert.Equal(t, []string{}, v.ValidateKeys([]string{}))
-	assert.Equal(t, []string{"PRJ-123", "TST-111", "ZZZ-31"}, v.ValidateKeys([]string{"PRJ-123", "TST-111", "ZZZ-31"}))
+	assert.Equal(t, []string{}, v.ValidateJiraKeys([]string{}))
+	assert.Equal(t, []string{"PRJ-123", "TST-111", "ZZZ-31"}, v.ValidateJiraKeys([]string{"PRJ-123", "TST-111", "ZZZ-31"}))
 
 	v = SetupValidator(&config.Rocketchat{
-		WhitelistedProjectKeys: []string{},
-		BlacklistedProjectKeys: []string{"ZZZ"},
+		WhitelistedJiraProjectKeys: []string{},
+		BlacklistedJiraProjectKeys: []string{"ZZZ"},
 	})
-	assert.Equal(t, []string{"PRJ-123", "TST-111"}, v.ValidateKeys([]string{"PRJ-123", "TST-111", "ZZZ-31"}))
+	assert.Equal(t, []string{"PRJ-123", "TST-111"}, v.ValidateJiraKeys([]string{"PRJ-123", "TST-111", "ZZZ-31"}))
 
 	v = SetupValidator(&config.Rocketchat{
-		WhitelistedProjectKeys: []string{"ZZZ"},
-		BlacklistedProjectKeys: []string{},
+		WhitelistedJiraProjectKeys: []string{"ZZZ"},
+		BlacklistedJiraProjectKeys: []string{},
 	})
-	assert.Equal(t, []string{"ZZZ-31"}, v.ValidateKeys([]string{"PRJ-123", "TST-111", "ZZZ-31"}))
+	assert.Equal(t, []string{"ZZZ-31"}, v.ValidateJiraKeys([]string{"PRJ-123", "TST-111", "ZZZ-31"}))
 
 	v = SetupValidator(&config.Rocketchat{
-		WhitelistedProjectKeys: []string{"ZZZ", "PRJ"},
-		BlacklistedProjectKeys: []string{"ZZZ"},
+		WhitelistedJiraProjectKeys: []string{"ZZZ", "PRJ"},
+		BlacklistedJiraProjectKeys: []string{"ZZZ"},
 	})
-	assert.Equal(t, []string{"PRJ-123", "PRJ-333"}, v.ValidateKeys([]string{"PRJ-123", "TST-111", "PRJ-333", "ZZZ-31"}))
+	assert.Equal(t, []string{"PRJ-123", "PRJ-333"}, v.ValidateJiraKeys([]string{"PRJ-123", "TST-111", "PRJ-333", "ZZZ-31"}))
 }

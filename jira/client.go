@@ -2,12 +2,11 @@ package jira
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"github.com/pru-mike/rocketchat-jira-webhook/client"
 	"github.com/pru-mike/rocketchat-jira-webhook/config"
-	"net/http"
+	"regexp"
 	"strings"
-	"sync"
 )
 
 const apiPrefix = "/rest/api/2"
@@ -17,62 +16,53 @@ type Jira struct {
 	username, password string
 	apiURL             string
 	browseURL          string
-	httpClient         *http.Client
+	client             *client.Client
 	requestFields      string
+	re                 *regexp.Regexp
 }
 
 func NewClient(config *config.Jira) *Jira {
 	requestFields := []string{"summary", "description"}
 	requestFields = append(requestFields, config.RequestFields()...)
+
+	re := findKeysRegexp
+	if config.FindKeyRegexp != "" {
+		re = regexp.MustCompile(config.FindKeyRegexp)
+	}
+
 	return &Jira{
-		username:      config.Username,
-		password:      config.Password,
-		httpClient:    &http.Client{Timeout: config.Timeout},
+		client:        client.New(config.Username, config.Password, config.Timeout),
 		browseURL:     fmt.Sprintf("%s%s", config.URL, browsePrefix),
 		apiURL:        fmt.Sprintf("%s%s", config.URL, apiPrefix),
 		requestFields: strings.Join(requestFields, ","),
+		re:            re,
 	}
+}
+
+func (j *Jira) ParseKeys(text string) []string {
+	return parseKeys(j.re, text)
 }
 
 func (j *Jira) makeRequest(ctx context.Context, url string, addFields bool, data interface{}) error {
-	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
-	if err != nil {
-		return fmt.Errorf("can't create request %q: %w", url, err)
-	}
-
+	var queryString map[string]string
 	if addFields {
-		req.URL.Query().Add("fields", j.requestFields)
+		queryString = make(map[string]string)
+		queryString["fields"] = j.requestFields
 	}
-
-	req.SetBasicAuth(j.username, j.password)
-	resp, err := j.httpClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("request failed %q: %w", url, err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("request failed %q: %s", url, resp.Status)
-	}
-
-	err = json.NewDecoder(resp.Body).Decode(&data)
-	if err != nil {
-		return fmt.Errorf("can't read json %q: %w", url, err)
-	}
-	return nil
-}
-
-func (j *Jira) GetMyself() (*Myself, error) {
-	return j.GetMyselfCtx(context.Background())
-}
-
-func (j *Jira) GetMyselfCtx(ctx context.Context) (*Myself, error) {
-	var myself Myself
-	return &myself, j.makeRequest(ctx, fmt.Sprintf("%s/myself", j.apiURL), false, &myself)
+	return j.client.MakeGETRequest(ctx, url, queryString, data)
 }
 
 func (j *Jira) issueAPIURL(issueKey string) string {
 	return fmt.Sprintf("%s/issue/%s", j.apiURL, issueKey)
+}
+
+func (j *Jira) GetCurrentUser() (string, error) {
+	var myself Myself
+	err := j.makeRequest(context.Background(), fmt.Sprintf("%s/myself", j.apiURL), false, &myself)
+	if err != nil {
+		return "", err
+	}
+	return myself.DisplayName, nil
 }
 
 func (j *Jira) GetIssueCtx(ctx context.Context, issueKey string) (*Issue, error) {
@@ -82,40 +72,17 @@ func (j *Jira) GetIssueCtx(ctx context.Context, issueKey string) (*Issue, error)
 	return &issue, j.makeRequest(ctx, j.issueAPIURL(issueKey), true, &issue)
 }
 
-func (j *Jira) GetIssues(issueKeys []string) ([]*Issue, error) {
-	return j.GetIssuesCtx(context.Background(), issueKeys)
+var _ client.KeyGetter = (*Jira)(nil)
+
+func (j *Jira) GetByKey(ctx context.Context, issueKey string) (interface{}, error) {
+	return j.GetIssueCtx(ctx, issueKey)
 }
 
-func (j *Jira) GetIssuesCtx(ctx context.Context, issueKeys []string) ([]*Issue, error) {
-	var wg sync.WaitGroup
+func (j *Jira) GetIssues(issueKeys []string) ([]*Issue, error) {
 	var issues []*Issue
-	var errs []error
-	wg.Add(len(issueKeys))
-	var mu sync.Mutex
-	setResult := func(issue *Issue, err error) {
-		mu.Lock()
-		if err != nil {
-			errs = append(errs, err)
-		} else {
-			issues = append(issues, issue)
-		}
-		mu.Unlock()
-	}
-	for _, issue := range issueKeys {
-		go func(issue string) {
-			defer wg.Done()
-			defer func() {
-				if err := recover(); err != nil {
-					setResult(nil, fmt.Errorf("panic while getting %s: %v", issue, err))
-				}
-			}()
-			setResult(j.GetIssueCtx(ctx, issue))
-		}(issue)
-	}
-	wg.Wait()
-	var err error
-	if len(errs) != 0 {
-		err = fmt.Errorf("can't get issues: %v", errs)
+	data, err := j.client.BulkKeyRequests(context.Background(), j, issueKeys)
+	for _, d := range data {
+		issues = append(issues, d.(*Issue))
 	}
 	return issues, err
 }

@@ -1,8 +1,9 @@
 rocketchat-jira-webhook
 =======================
-It's [Golang](https://golang.org/) port of [rocketchat-jira-trigger](https://github.com/gustavkarlsson/rocketchat-jira-trigger).  
+Initially it's [Golang](https://golang.org/) port of [rocketchat-jira-trigger](https://github.com/gustavkarlsson/rocketchat-jira-trigger).  
 Outgoing [Rocket.Chat](https://rocket.chat) webhook integration that summarizes mentioned 
 [JIRA](https://www.atlassian.com/software/jira) issues.
+Additionally, it's support summarizes [Confluence](https://www.atlassian.com/software/confluence) documents.
 
 ![Example](example/example.png)
 
@@ -29,15 +30,14 @@ docker run -p 4567:4567 -v $PWD:/app rocketchat-jira-webhook
 
 Configuration
 -------------
-Configuration is slightly differ from original [rocketchat-jira-trigger](https://github.com/gustavkarlsson/rocketchat-jira-trigger)
-So it isn't substituted one by one.  
-There is plenty of configuration options, but the only required parameters is jira credentials. 
+Configuration is differ from original [rocketchat-jira-trigger](https://github.com/gustavkarlsson/rocketchat-jira-trigger)
+There is plenty of configuration options, the only required option is connection parameters in "jira" or "confluence". Connection could be configured one of or both.
 For all other options there are reasonable defaults.  
 For [minimal](https://github.com/pru-mike/rocketchat-jira-webhook/blob/master/example/minimal.toml)
 and [all](https://github.com/pru-mike/rocketchat-jira-webhook/blob/master/example/everything.toml) 
 options see configuration examples.
 
-#### Predefined icon value for avatar configuration
+#### Predefined icon value for avatar
 
 alien-slugs alien blue-jira-software blue-jira contained-blue-jira-software contained-blue-jira 
 contained-neutral-jira-software contained-neutral-jira contained-white-jira-software contained-white-jira 
@@ -48,23 +48,29 @@ stickman-sport stickman-sport2 stickman-study stickman-swimmer stickman-treadmil
 stickman-weightlifting stickman-yoga stickman-yoga2 stickman-yoga3 stickman-yoga4 stickman-yoga5
 stickman stickman2
 
+Atlassian icon gathered from official website. Other icons gathered from awesome https://icon-icons.com/ and has CC Atribution License.
+
 Usage
 -----
-The same as [rocketchat-jira-trigger](https://github.com/gustavkarlsson/rocketchat-jira-trigger).  
-
 First you need to start **rocketchat-jira-webhook**
 
 Second you need to going to Rocket.Chat administration panel and setting up outgoing webhook pointing 
 at **rocketchat-jira-webhook** instance.  
 
-And then you can write a message containing some JIRA issues. For example: `TEST-1234`  
-Then **rocketchat-jira-webhook** will try to gather details about issues and reply it to Rocket.Chat if found some.
+There is three route you can point your Rocket.Chat instance
+/jira - only jira issues would be summarized at this route
+/confluence - only confluence issues would be summarized at this
+/jiraconfluence - and both would be summarized at this
+
+After configuration complete you can write a message containing some JIRA issues or Confluence documents. For example: `TEST-1234` 
+`or something like https://confluence.mycompnay.com/dispaly/TST/test+page`
+Then **rocketchat-jira-webhook** will try to gather details about issues or document and reply it to Rocket.Chat if found some.
 
 Health testing
 --------------
-JIRA connection can be checked with /health route.  
+Connections can be checked with /health route.  
 
 ```bash
 curl http://localhost:4567/health
-{"ok":true,"jira":{"name":"JIRA Bot","error":""}}
+{"ok":true,"jira":{"name":"JIRA Bot","error":""},"confluence":{"name":"Confluence Bot","error":""}}
 ```

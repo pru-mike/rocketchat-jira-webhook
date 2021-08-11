@@ -28,7 +28,9 @@ func main() {
 	app := app.New(cfg)
 
 	http.Handle("/health", http.HandlerFunc(app.Health))
-	http.Handle("/", http.HandlerFunc(app.Jira))
+	http.Handle("/jira", http.HandlerFunc(app.Jira))
+	http.Handle("/confluence", http.HandlerFunc(app.Confluence))
+	http.Handle("/jiraconfluence", http.HandlerFunc(app.JiraConfluence))
 	logger.Infof("start listening on '%s'", cfg.ListenAddr())
 	logger.Fatal(http.ListenAndServe(cfg.ListenAddr(), nil))
 }

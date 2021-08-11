@@ -1,27 +1,15 @@
 package jira
 
 import (
+	"github.com/pru-mike/rocketchat-jira-webhook/utils"
 	"regexp"
 	"strings"
 )
 
-var re = regexp.MustCompile(`\b[a-zA-Z][a-zA-Z0-9]+-\d+\b`)
+var findKeysRegexp = regexp.MustCompile(`\b[a-zA-Z][a-zA-Z0-9]+-\d+\b`)
 
-func ParseKeys(text string) []string {
-	return uniq(re.FindAllString(text, -1))
-}
-
-func uniq(str []string) []string {
-	n := 0
-	m := make(map[string]struct{}, len(str))
-	for _, s := range str {
-		if _, ok := m[s]; !ok {
-			str[n] = s
-			n++
-			m[s] = struct{}{}
-		}
-	}
-	return str[:n]
+func parseKeys(re *regexp.Regexp, text string) []string {
+	return utils.Uniq(re.FindAllString(text, -1))
 }
 
 func StripKey(key string) string {

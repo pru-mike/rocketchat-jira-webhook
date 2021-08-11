@@ -5,36 +5,39 @@ host = "0.0.0.0"
 port = 4567
 # Application log level, one of fatal, error, info, debug
 log_level = "info"
-# Return JIRA error to rocket
+# Return JIRA/Confluence error to rocket
 err_to_rocket = true
 
+# One of Jira or Confluence connection is MUST, both is optional
+# Jira connection
 [jira]
-# *REQUIRED*, Jira URL
+# Jira URL *REQUIRED*
 url = "https://jira.mycompany.com"
-# *REQUIRED*, Jira login
+# Jira login *REQUIRED*
 username = "jirauser"
-# *REQUIRED*, Jira pass
+# Jira pass *REQUIRED*
 password = "jirapassword"
 # Jira request timeout
 timeout = "30s"
 
-[message]
+# Confluence connection
+[confluence]
+# Confluence URL *REQUIRED*
+url = "https://confluence.mycompany.com"
+# Confluence login *REQUIRED*
+username = "confluenceuser"
+# Confluence pass *REQUIRED*
+password = "confluencepassword"
+# Confluence request timeout
+timeout = "30s"
+
+[message_jira]
 # Override username, user must have message-impersonate permission, Default not to override
 username = "JIRA"
 # Override icon, must be valid url or predefined icon value, Default not to override.
 icon_url = "blue-jira-software"
 # The max length of the JIRA description until truncation happens
 max_text_length = 600
-# Color attachments according to issue priority
-priority_colors = true
-# Fallback color when priority_colors is false
-default_color = "#205081"
-# Priority id precedence from highest to lowest, so 1=blocker, 2=critical,..,5=trivial
-priority_id_precedence = [1, 2, 3, 4, 5]
-# Associate colors to priority in order from highest to lowest e.g. Blocker Critical Major Minor Trivial
-colors_by_priority = ["#FF4437", "#D04437", "#E3833C", "#F6C342", "#707070"]
-# Message fields to print, additionaly supported fields is Creator, Watches, Components, Labels
-fields = ["Priority", "Type", "Status", "Resolution", "Assignee", "Reporter", "Created", "Updated"]
 # Use peoples real names instead of jira usernames
 use_real_names = true
 # Date format layout according to https://pkg.go.dev/time#Time.Format
@@ -48,11 +51,51 @@ show_author = true
 # List of authors icons, will be choosed randomly. Could be URLs or predefined icon value.
 # By default every stickman* icon used. If empty icon does not displayed.
 author_icons = ["stickman", "stickman2", "stickman-apple", "stickman-bike", "stickman-excercise"]
+# Strip html tags from description
+strip_tags = false
+# Color attachments according to issue priority
+priority_colors = true
+# Fallback color when priority_colors is false
+default_color = "#205081"
+# Priority id precedence from highest to lowest, so 1=blocker, 2=critical,..,5=trivial
+priority_id_precedence = [1, 2, 3, 4, 5]
+# Associate colors to priority in order from highest to lowest e.g. Blocker Critical Major Minor Trivial
+colors_by_priority = ["#FF4437", "#D04437", "#E3833C", "#F6C342", "#707070"]
+# Message fields to print, additionaly supported fields is Creator, Watches, Components, Labels
+fields = ["Priority", "Type", "Status", "Resolution", "Assignee", "Reporter", "Created", "Updated"]
 # List of inactive authors icons. If empty author_icons will be used.
 inactive_author_icons = ["candle", "tombstone", "gallows", "coffin"]
 # Task will be sorted by precedence
 sort_by_precedence = true
 
+[message_confluence]
+# Override username, user must have message-impersonate permission, Default not to override
+username = "Confluence"
+# Override icon, must be valid url or predefined icon value, Default not to override.
+icon_url = "blue-jira-software"
+# The max length of the Confluenct document description until truncation happens
+max_text_length = 1800
+# Use peoples real names instead of jira usernames
+use_real_names = true
+# Date format layout according to https://pkg.go.dev/time#Time.Format
+datetime_layout = "02/01/2006 15:04"
+# "Found %d documents" message language, for now supported en,ru,fr,de
+msg_lang = "en"
+# Should be or not html unescaping on title and text fields
+unescape_html = true
+# Show author for document
+show_author = true
+# List of authors icons, will be choosed randomly. Could be URLs or predefined icon value.
+# By default every stickman* icon used. If empty icon does not displayed.
+author_icons = ["stickman", "stickman2", "stickman-apple", "stickman-bike", "stickman-excercise"]
+# Document attachments color
+default_color = "#205081"
+# Message fields to print
+fields = ["space_name", "created_by", "created_date", "updated_by", "updated_date", "last_version", "status", "latest"]
+# Strip html tags from description
+strip_tags = false
+
+# This configuration applied to both jira and confluencs connection
 [rocketchat]
 # Allowed Rocket.Chat tokens. An empty array means all tokens are allowed
 tokens = []
@@ -68,7 +111,8 @@ blacklisted_channels = []
 allow_edits = false
 # Whether to ignore all messages from bots
 allow_bots = false
+# And this is exception and works only for jira issues
 # Only this project keys will be gathered from jira unless blacklisted, empty all keys allowed
-whitelisted_project_keys = []
+whitelisted_jira_keys = []
 # This project keys will not be gathered from jira
-blacklisted_project_keys = []
+blacklisted_jira_keys = []

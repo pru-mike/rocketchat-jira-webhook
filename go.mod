@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/go-playground/validator/v10 v10.7.0
+	github.com/grokify/html-strip-tags-go v0.0.1
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.0

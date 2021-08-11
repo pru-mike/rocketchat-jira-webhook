@@ -2,3 +2,8 @@
 url = "https://jira.mycompany.com"
 username = "jirauser"
 password = "jirapassword"
+# or
+[confluence]
+url = "https://confluence.mycompany.com"
+username = "confluenceuser"
+password = "confluencepassword"

@@ -2,106 +2,112 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/pru-mike/rocketchat-jira-webhook/config"
+	"github.com/pru-mike/rocketchat-jira-webhook/confluence"
 	"github.com/pru-mike/rocketchat-jira-webhook/jira"
 	"github.com/pru-mike/rocketchat-jira-webhook/logger"
 	"github.com/pru-mike/rocketchat-jira-webhook/rocketchat"
+	"io"
 	"net/http"
 )
 
 type App struct {
-	errToRocket bool
-	validate    *rocketchat.Validate
-	jira        *jira.Jira
-	out         *rocketchat.OutputBuilder
+	errToRocket   bool
+	validate      *rocketchat.Validate
+	jira          *jira.Jira
+	jiraOut       *rocketchat.JiraOutputBuilder
+	jiraErr       *rocketchat.TextOutputBuilder
+	confluence    *confluence.Confluence
+	confluenceOut *rocketchat.ConfluenceOutputBuilder
+	confluenceErr *rocketchat.TextOutputBuilder
+	multiplexOut  *rocketchat.MultiplexOutputBuilder
 }
 
 func New(cfg *config.Config) *App {
 	return &App{
-		errToRocket: cfg.App.ErrToRocket,
-		validate:    rocketchat.SetupValidator(&cfg.Rocketchat),
-		jira:        jira.NewClient(&cfg.Jira),
-		out:         rocketchat.NewOutputBuilder(&cfg.Message),
+		errToRocket:   cfg.App.ErrToRocket,
+		validate:      rocketchat.SetupValidator(&cfg.Rocketchat),
+		jira:          jiraClient(cfg.Jira),
+		jiraOut:       rocketchat.NewJiraOutputBuilder(&cfg.MessageJira),
+		jiraErr:       rocketchat.NewTextOutputBuilder(&cfg.MessageJira.Message),
+		confluence:    confluenceClient(cfg.Confluence),
+		confluenceOut: rocketchat.NewConfluenceOutputBuilder(&cfg.MessageConfluence),
+		confluenceErr: rocketchat.NewTextOutputBuilder(&cfg.MessageConfluence.Message),
+		multiplexOut:  rocketchat.NewMultiplexOutputBuilder(),
 	}
 }
 
-func (app *App) Jira(w http.ResponseWriter, req *http.Request) {
+func jiraClient(cfg *config.Jira) *jira.Jira {
+	if cfg != nil {
+		return jira.NewClient(cfg)
+	}
+	return nil
+}
 
+func confluenceClient(cfg *config.Confluence) *confluence.Confluence {
+	if cfg != nil {
+		return confluence.NewClient(cfg)
+	}
+	return nil
+}
+
+func (app *App) readMessage(r io.Reader) (*rocketchat.Input, error) {
 	var in rocketchat.Input
-	err := json.NewDecoder(req.Body).Decode(&in)
+	err := json.NewDecoder(r).Decode(&in)
 	if err != nil {
 		logger.Errorf("can't decode message: %v", err)
-		return
+		return nil, err
 	}
-	logger.Debugf("input message: %+v", in)
 
+	logger.Debugf("input message: %+v", in)
 	err = app.validate.Struct(in)
 	if err != nil {
 		logger.Debugf("validation failed %v", err)
-		return
+		return nil, err
 	}
-
-	keys := app.validate.ValidateKeys(jira.ParseKeys(in.Text))
-	if len(keys) == 0 {
-		logger.Debug("jira keys not found")
-		return
-	}
-	logger.Debugf("found jira keys '%+v'", keys)
-
-	issues, err := app.jira.GetIssues(keys)
-	if err != nil {
-		logger.Error(err)
-	}
-	if len(issues) == 0 {
-		if err != nil && app.errToRocket {
-			writeResponse(w, app.out.NewMsg(err.Error()))
-		}
-	} else {
-		writeResponse(w, app.out.New(issues))
-	}
+	return &in, nil
 }
 
-func (app *App) Health(w http.ResponseWriter, _ *http.Request) {
-	me, err := app.jira.GetMyself()
-	ok := true
-	var errStr string
-	if err != nil {
-		ok = false
-		errStr = err.Error()
-		logger.Errorf("can't get myself: %v", err)
-	}
-	health := struct {
-		Ok   bool `json:"ok"`
-		Jira struct {
-			Name  string `json:"name"`
-			Error string `json:"error"`
-		} `json:"jira"`
-	}{
-		Ok: ok,
-		Jira: struct {
-			Name  string `json:"name"`
-			Error string `json:"error"`
-		}{
-			Name:  me.DisplayName,
-			Error: errStr,
-		},
-	}
-	if !ok {
-		writeError(w, health)
-	} else {
-		writeResponse(w, health)
-	}
-}
-
-func writeResponse(w http.ResponseWriter, data interface{}) {
+func ok(w http.ResponseWriter, data interface{}) {
 	w.Header().Add("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(data)
-	if err != nil {
+	if err := json.NewEncoder(w).Encode(data); err != nil {
 		logger.Error(err)
 	}
 }
 
-func writeError(w http.ResponseWriter, data interface{}) {
+func err(w http.ResponseWriter, data interface{}) {
+	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusInternalServerError)
-	writeResponse(w, data)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		logger.Error(err)
+	}
+}
+
+type conn string
+
+const (
+	jiraConn       conn = "jira"
+	confluenceConn conn = "confluence"
+)
+
+func (app *App) checkConnection(w http.ResponseWriter, c conn, out *rocketchat.TextOutputBuilder) error {
+	var isSet bool
+	switch c {
+	case jiraConn:
+		isSet = app.jira != nil
+	case confluenceConn:
+		isSet = app.confluence != nil
+	default:
+		panic(fmt.Sprintf("wrond connection type: ;%s'", c))
+	}
+	if !isSet {
+		err := fmt.Errorf("rocketchat-jira-webhook configuration error: '%s' connections is turned off", c)
+		logger.Error(err.Error())
+		if app.errToRocket {
+			ok(w, out.Output(err.Error()))
+		}
+		return err
+	}
+	return nil
 }

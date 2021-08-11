@@ -7,8 +7,37 @@ import (
 	"time"
 )
 
-type FieldsTime time.Time
+type Time time.Time
+
+func (t *Time) UnmarshalJSON(b []byte) error {
+	var str string
+	err := json.Unmarshal(b, &str)
+	if err != nil {
+		return err
+	}
+	pt, err := time.Parse("2006-01-02T15:04:05.999-0700", str)
+	if err != nil {
+		return err
+	}
+	*t = Time(pt)
+	return nil
+}
+
 type FieldsID int
+
+func (id *FieldsID) UnmarshalJSON(b []byte) error {
+	var strID string
+	err := json.Unmarshal(b, &strID)
+	if err != nil {
+		return err
+	}
+	intID, err := strconv.ParseInt(strID, 10, 32)
+	if err != nil {
+		return err
+	}
+	*id = FieldsID(int(intID))
+	return nil
+}
 
 type Priority struct {
 	ID      FieldsID `json:"id"`
@@ -41,11 +70,11 @@ type Issue struct {
 	Self      string   `json:"self"`
 	Key       string   `json:"key"`
 	Fields    struct {
-		Summary     string     `json:"summary"`
-		Description string     `json:"description"`
-		Created     FieldsTime `json:"created"`
-		Updated     FieldsTime `json:"updated"`
-		Priority    Priority   `json:"priority"`
+		Summary     string   `json:"summary"`
+		Description string   `json:"description"`
+		Created     Time     `json:"created"`
+		Updated     Time     `json:"updated"`
+		Priority    Priority `json:"priority"`
 		Status      struct {
 			ID   FieldsID `json:"id"`
 			Name string   `json:"name"`
@@ -70,34 +99,6 @@ type Issue struct {
 		} `json:"components"`
 		Labels []string `json:"labels"`
 	} `json:"fields"`
-}
-
-func (id *FieldsID) UnmarshalJSON(b []byte) error {
-	var strID string
-	err := json.Unmarshal(b, &strID)
-	if err != nil {
-		return err
-	}
-	intID, err := strconv.ParseInt(strID, 10, 32)
-	if err != nil {
-		return err
-	}
-	*id = FieldsID(int(intID))
-	return nil
-}
-
-func (t *FieldsTime) UnmarshalJSON(b []byte) error {
-	var str string
-	err := json.Unmarshal(b, &str)
-	if err != nil {
-		return err
-	}
-	pt, err := time.Parse("2006-01-02T15:04:05.999-0700", str)
-	if err != nil {
-		return err
-	}
-	*t = FieldsTime(pt)
-	return nil
 }
 
 func (i *Issue) Link() string {
