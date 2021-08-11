@@ -3,7 +3,7 @@ rocketchat-jira-webhook
 Initially it's [Golang](https://golang.org/) port of [rocketchat-jira-trigger](https://github.com/gustavkarlsson/rocketchat-jira-trigger).  
 Outgoing [Rocket.Chat](https://rocket.chat) webhook integration that summarizes mentioned 
 [JIRA](https://www.atlassian.com/software/jira) issues.
-Additionally, it's support summarizes [Confluence](https://www.atlassian.com/software/confluence) documents.
+Additionally, it's support summarize [Confluence](https://www.atlassian.com/software/confluence) documents.
 
 ![Example](example/example.png)
 
@@ -57,13 +57,13 @@ First you need to start **rocketchat-jira-webhook**
 Second you need to going to Rocket.Chat administration panel and setting up outgoing webhook pointing 
 at **rocketchat-jira-webhook** instance.  
 
-There is three route you can point your Rocket.Chat instance
-/jira - only jira issues would be summarized at this route
-/confluence - only confluence issues would be summarized at this
+There is three route you can point your Rocket.Chat instance  
+/jira - only jira issues would be summarized at this route  
+/confluence - only confluence issues would be summarized at this  
 /jiraconfluence - and both would be summarized at this
 
 After configuration complete you can write a message containing some JIRA issues or Confluence documents. For example: `TEST-1234` 
-`or something like https://confluence.mycompnay.com/dispaly/TST/test+page`
+or something like `https://confluence.mycompnay.com/dispaly/TST/test+page`
 Then **rocketchat-jira-webhook** will try to gather details about issues or document and reply it to Rocket.Chat if found some.
 
 Health testing
