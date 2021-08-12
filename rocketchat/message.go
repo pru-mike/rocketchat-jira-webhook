@@ -55,7 +55,7 @@ var translates = []translate{
 	{
 		"ru", "Found %d doc",
 		plural.Selectf(1, "%d",
-			plural.One, "Найдена %[1]d документ.",
+			plural.One, "Найден %[1]d документ.",
 			plural.Few, "Найдено %[1]d документа.",
 			plural.Other, "Найдено %[1]d документов.",
 		),

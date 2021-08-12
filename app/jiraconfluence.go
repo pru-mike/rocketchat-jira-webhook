@@ -19,12 +19,19 @@ func (app *App) JiraConfluence(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	issues, err := app.GetJiraIssues(in.Text)
-	pages, err := app.GetConfluencePages(in.Text)
+	issues, errJira := app.GetJiraIssues(in.Text)
+	pages, errConfluence := app.GetConfluencePages(in.Text)
 
 	if len(pages) == 0 && len(issues) == 0 {
-		if err != nil && app.errToRocket {
-			ok(w, app.jiraErr.Output(err.Error()))
+		if app.errToRocket {
+			var sendErr string
+			if errJira != nil {
+				sendErr += errJira.Error()
+			}
+			if errConfluence != nil {
+				sendErr += errConfluence.Error()
+			}
+			ok(w, app.jiraErr.Output(sendErr))
 		}
 	} else {
 		ok(w,
