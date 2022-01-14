@@ -5,7 +5,7 @@ Outgoing [Rocket.Chat](https://rocket.chat) webhook integration that summarizes 
 [JIRA](https://www.atlassian.com/software/jira) issues.
 Additionally, it's support summarize [Confluence](https://www.atlassian.com/software/confluence) documents.
 
-![Example](example/example.png)
+![Example](examples/example.png)
 
 Installation
 ------------
@@ -24,7 +24,7 @@ Running with docker
 git clone git@github.com:pru-mike/rocketchat-jira-webhook.git
 cd rocketchat-jira-webhook
 docker build . -t rocketchat-jira-webhook
-cp example/minimal.toml config.toml
+cp examples/minimal.toml config.toml
 docker run -p 4567:4567 -v $PWD:/app rocketchat-jira-webhook
 ```
 
@@ -33,8 +33,8 @@ Configuration
 Configuration is differ from original [rocketchat-jira-trigger](https://github.com/gustavkarlsson/rocketchat-jira-trigger)
 There is plenty of configuration options, the only required option is connection parameters in "jira" or "confluence". Connection could be configured one of or both.
 For all other options there are reasonable defaults.  
-For [minimal](https://github.com/pru-mike/rocketchat-jira-webhook/blob/master/example/minimal.toml)
-and [all](https://github.com/pru-mike/rocketchat-jira-webhook/blob/master/example/everything.toml) 
+For [minimal](examples/minimal.toml)
+and [all](examples/everything.toml) 
 options see configuration examples.
 
 #### Predefined icon value for avatar
