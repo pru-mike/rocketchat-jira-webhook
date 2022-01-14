@@ -1,9 +1,10 @@
 package app
 
 import (
+	"net/http"
+
 	"github.com/pru-mike/rocketchat-jira-webhook/jira"
 	"github.com/pru-mike/rocketchat-jira-webhook/logger"
-	"net/http"
 )
 
 func (app *App) GetJiraIssues(text string) ([]*jira.Issue, error) {
@@ -25,13 +26,12 @@ func (app *App) GetJiraIssues(text string) ([]*jira.Issue, error) {
 }
 
 func (app *App) Jira(w http.ResponseWriter, req *http.Request) {
-
 	in, err := app.readMessage(req.Body)
 	if err != nil {
 		return
 	}
 
-	if app.checkConnection(w, confluenceConn, app.jiraErr) != nil {
+	if app.checkConnection(w, jiraConn, app.jiraErr) != nil {
 		return
 	}
 
