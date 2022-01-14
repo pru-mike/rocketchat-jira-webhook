@@ -2,12 +2,13 @@ package main
 
 import (
 	"flag"
-	"github.com/pru-mike/rocketchat-jira-webhook/app"
-	"github.com/pru-mike/rocketchat-jira-webhook/config"
-	"github.com/pru-mike/rocketchat-jira-webhook/logger"
 	"math/rand"
 	"net/http"
 	"time"
+
+	"github.com/pru-mike/rocketchat-jira-webhook/app"
+	"github.com/pru-mike/rocketchat-jira-webhook/config"
+	"github.com/pru-mike/rocketchat-jira-webhook/logger"
 )
 
 func init() {
