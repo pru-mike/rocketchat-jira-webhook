@@ -1,9 +1,10 @@
 package rocketchat
 
 import (
+	"testing"
+
 	"github.com/pru-mike/rocketchat-jira-webhook/config"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestOutputBuilder_TrimMaxLen(t *testing.T) {

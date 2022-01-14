@@ -2,11 +2,12 @@ package confluence
 
 import (
 	"bytes"
+	"regexp"
+	"text/template"
+
 	"github.com/pru-mike/rocketchat-jira-webhook/config"
 	"github.com/pru-mike/rocketchat-jira-webhook/logger"
 	"github.com/pru-mike/rocketchat-jira-webhook/utils"
-	"regexp"
-	"text/template"
 )
 
 const findPagesByViewID = `{{ .URL }}[^\s]+?Id=(\d+)`

@@ -3,13 +3,14 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+
 	"github.com/pru-mike/rocketchat-jira-webhook/config"
 	"github.com/pru-mike/rocketchat-jira-webhook/confluence"
 	"github.com/pru-mike/rocketchat-jira-webhook/jira"
 	"github.com/pru-mike/rocketchat-jira-webhook/logger"
 	"github.com/pru-mike/rocketchat-jira-webhook/rocketchat"
-	"io"
-	"net/http"
 )
 
 type App struct {

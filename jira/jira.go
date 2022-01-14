@@ -1,9 +1,10 @@
 package jira
 
 import (
-	"github.com/pru-mike/rocketchat-jira-webhook/utils"
 	"regexp"
 	"strings"
+
+	"github.com/pru-mike/rocketchat-jira-webhook/utils"
 )
 
 var findKeysRegexp = regexp.MustCompile(`\b[a-zA-Z][a-zA-Z0-9]+-\d+\b`)

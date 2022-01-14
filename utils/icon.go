@@ -1,8 +1,9 @@
 package utils
 
 import (
-	"github.com/pru-mike/rocketchat-jira-webhook/assets"
 	"math/rand"
+
+	"github.com/pru-mike/rocketchat-jira-webhook/assets"
 )
 
 func getNextElem(src []string, n uint) string {

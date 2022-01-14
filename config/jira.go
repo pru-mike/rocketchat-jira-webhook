@@ -2,10 +2,11 @@ package config
 
 import (
 	"fmt"
-	"github.com/pru-mike/rocketchat-jira-webhook/utils"
-	"github.com/spf13/viper"
 	"strings"
 	"time"
+
+	"github.com/pru-mike/rocketchat-jira-webhook/utils"
+	"github.com/spf13/viper"
 )
 
 const (

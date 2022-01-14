@@ -2,14 +2,15 @@ package rocketchat
 
 import (
 	"bytes"
+	"html"
+	"text/template"
+	"unicode/utf8"
+
 	strip "github.com/grokify/html-strip-tags-go"
 	"github.com/pru-mike/rocketchat-jira-webhook/assets"
 	"github.com/pru-mike/rocketchat-jira-webhook/config"
 	"github.com/pru-mike/rocketchat-jira-webhook/logger"
 	"golang.org/x/text/message"
-	"html"
-	"text/template"
-	"unicode/utf8"
 )
 
 type OutputBuilder struct {

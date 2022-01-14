@@ -2,9 +2,10 @@ package rocketchat
 
 import (
 	"encoding/json"
+	"testing"
+
 	"github.com/pru-mike/rocketchat-jira-webhook/config"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestValidateToken(t *testing.T) {
