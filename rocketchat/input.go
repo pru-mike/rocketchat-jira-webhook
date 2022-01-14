@@ -2,7 +2,12 @@ package rocketchat
 
 import (
 	"encoding/json"
+	"regexp"
 	"time"
+)
+
+var (
+	rexReply = regexp.MustCompile(`^\[ \]\(http[^)]+\) `)
 )
 
 type Bot bool
@@ -30,4 +35,8 @@ func (bot *Bot) UnmarshalJSON(b []byte) error {
 	}
 	*bot = Bot(inputVal)
 	return nil
+}
+
+func (i *Input) TextWithoutReply() string {
+	return rexReply.ReplaceAllString(i.Text, "")
 }
