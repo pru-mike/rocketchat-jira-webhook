@@ -15,7 +15,7 @@ CONFIG_FILE ?= examples/minimal.toml
 LDFLAGS="-w -s"
 
 clean:
-	rm -rf ${BINARIES_DIRECTORY}
+	rm -f ${BINARIES_DIRECTORY}
 
 run:
 	go run ${MAIN_FILE} -config ${CONFIG_FILE}

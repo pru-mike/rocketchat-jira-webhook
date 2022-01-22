@@ -24,8 +24,7 @@ Running with docker
 git clone git@github.com:pru-mike/rocketchat-jira-webhook.git
 cd rocketchat-jira-webhook
 docker build . -t rocketchat-jira-webhook
-cp examples/minimal.toml config.toml
-docker run -p 4567:4567 -v $PWD:/app rocketchat-jira-webhook
+docker run -p 4567:4567 -v $(pwd)/examples/minimal.toml:/etc/rocketchat-jira-webhook/config.toml rocketchat-jira-webhook
 ```
 
 Configuration
