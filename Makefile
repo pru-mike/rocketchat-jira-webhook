@@ -11,7 +11,7 @@ test:
 
 BINARIES_DIRECTORY=bin
 MAIN_FILE=cmd/main.go
-CONFIG_FILE=examples/minimal.toml
+CONFIG_FILE ?= examples/minimal.toml
 LDFLAGS="-w -s"
 
 clean:
