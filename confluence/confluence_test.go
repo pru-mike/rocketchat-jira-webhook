@@ -1,10 +1,11 @@
 package confluence
 
 import (
-	"github.com/pru-mike/rocketchat-jira-webhook/config"
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/pru-mike/rocketchat-jira-webhook/config"
 )
 
 func TestConfluence_FindPagesViewIDs(t *testing.T) {

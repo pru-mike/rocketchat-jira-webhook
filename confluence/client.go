@@ -3,10 +3,11 @@ package confluence
 import (
 	"context"
 	"fmt"
-	"github.com/pru-mike/rocketchat-jira-webhook/client"
-	"github.com/pru-mike/rocketchat-jira-webhook/config"
 	"regexp"
 	"strings"
+
+	"github.com/pru-mike/rocketchat-jira-webhook/client"
+	"github.com/pru-mike/rocketchat-jira-webhook/config"
 )
 
 const apiPrefix = "/rest/api"

@@ -1,10 +1,11 @@
 package rocketchat
 
 import (
+	"testing"
+
 	"github.com/pru-mike/rocketchat-jira-webhook/config"
 	"github.com/pru-mike/rocketchat-jira-webhook/jira"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestJiraOutputBuilder_Color(t *testing.T) {

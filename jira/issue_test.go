@@ -2,9 +2,10 @@ package jira
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTime_UnmarshalJSON(t *testing.T) {

@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/pru-mike/rocketchat-jira-webhook/assets"
 	"github.com/pru-mike/rocketchat-jira-webhook/logger"

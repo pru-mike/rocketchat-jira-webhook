@@ -1,11 +1,14 @@
-FROM golang:latest
+FROM golang:1.16 AS builder
+
 WORKDIR /build
-COPY go.mod go.sum ./
-RUN go mod download
-COPY . .
-RUN go build -o rocketchat-jira-webhook
-RUN go install
-VOLUME /app
-WORKDIR /app
-EXPOSE 4567
-CMD ["rocketchat-jira-webhook", "-config", "config.toml"]
+ADD . .
+RUN make build-docker && \
+    cd bin && \
+    mv *_docker rocketchat-jira-webhook
+
+FROM alpine
+
+WORKDIR /rocketchat-jira-webhook
+COPY --from=builder /build/bin .
+COPY examples/minimal.toml /etc/rocketchat-jira-webhook/config.toml
+CMD ["./rocketchat-jira-webhook"]

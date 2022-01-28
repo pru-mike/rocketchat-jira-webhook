@@ -1,9 +1,10 @@
 package app
 
 import (
+	"net/http"
+
 	"github.com/pru-mike/rocketchat-jira-webhook/confluence"
 	"github.com/pru-mike/rocketchat-jira-webhook/logger"
-	"net/http"
 )
 
 func (app *App) GetConfluencePages(text string) ([]*confluence.Page, error) {

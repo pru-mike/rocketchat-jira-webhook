@@ -1,11 +1,12 @@
 package rocketchat
 
 import (
+	"sort"
+	"strconv"
+
 	"github.com/pru-mike/rocketchat-jira-webhook/config"
 	"github.com/pru-mike/rocketchat-jira-webhook/jira"
 	"github.com/pru-mike/rocketchat-jira-webhook/utils"
-	"sort"
-	"strconv"
 )
 
 type JiraOutputBuilder struct {
