@@ -1,4 +1,5 @@
-PROJECT_NAME=$(shell basename "$(PWD)")
+CONFIG_FILE ?= examples/minimal.toml
+LDFLAGS="-w -s"
 
 tidy:
 	go mod tidy
@@ -9,16 +10,12 @@ vet:
 test:
 	go test ./... -v
 
-BINARIES_DIRECTORY=bin
-MAIN_FILE=cmd/main.go
-CONFIG_FILE ?= examples/minimal.toml
-LDFLAGS="-w -s"
-
 clean:
-	rm -f ${BINARIES_DIRECTORY}
+	rm -f bin/rocketchat-jira-webhook
 
 run:
-	go run ${MAIN_FILE} -config ${CONFIG_FILE}
+	go run cmd/main.go -config ${CONFIG_FILE}
 
-build-docker: vet clean
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags=${LDFLAGS} -o ${BINARIES_DIRECTORY}/${PROJECT_NAME}_docker ${MAIN_FILE}
+build-docker: clean vet
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+	go build -a -ldflags=${LDFLAGS} -o bin/rocketchat-jira-webhook cmd/main.go

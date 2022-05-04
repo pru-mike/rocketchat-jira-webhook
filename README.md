@@ -23,8 +23,12 @@ Running with docker
 ```bash
 git clone git@github.com:pru-mike/rocketchat-jira-webhook.git
 cd rocketchat-jira-webhook
+vi config.toml
 docker build . -t rocketchat-jira-webhook
-docker run -p 4567:4567 -v $(pwd)/examples/minimal.toml:/etc/rocketchat-jira-webhook/config.toml rocketchat-jira-webhook
+docker run --rm --name rocketchat-jira-webhook -p 4567:4567 -v $(pwd)/config.toml:/etc/rocketchat-jira-webhook/config.toml rocketchat-jira-webhook
+# or
+docker build --build-arg CONFIG=config.toml . -t rocketchat-jira-webhook
+docker run --rm --name rocketchat-jira-webhook -p 4567:4567 rocketchat-jira-webhook
 ```
 
 Configuration
