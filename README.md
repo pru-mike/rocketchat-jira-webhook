@@ -58,7 +58,17 @@ Usage
 First you need to start **rocketchat-jira-webhook**
 
 Second you need to going to Rocket.Chat administration panel and setting up outgoing webhook pointing 
-at **rocketchat-jira-webhook** instance.  
+at **rocketchat-jira-webhook** instance. 
+
+The Rocket.Chat configuration process should looking something like that
+- Going to /admin/integrations/new/outgoing
+- Set "Event Trigger" to "Message Sent"
+- Choose proper "Name (optional)" for integration, like "Jira Webhook"
+- Set "Channel" to all_direct_messages
+- Set URLs to YOUR rocketchat-jira-webhook with proper route like http://jira-webhook.mycorp.com/jira (see below)
+- Set User to valid rocket chat user with bot rights
+- Erase Token (or save it and add to rocketchat-jira-webhook config file)
+- Click Save
 
 There is three route you can point your Rocket.Chat instance  
 /jira - only jira issues would be summarized at this route  
@@ -77,3 +87,9 @@ Connections can be checked with /health route.
 curl http://localhost:4567/health
 {"ok":true,"jira":{"name":"JIRA Bot","error":""},"confluence":{"name":"Confluence Bot","error":""}}
 ```
+Troubleshooting
+----------------
+If something going wrong and you does not see replay from webhook, you should
+- Try to check /health url, is you connection ok?
+- Run application with log_level = "debug" and examine application log, is there any error?
+- If there is 'found jira keys' or 'found confluence ids' message and no any errors, then webhook successfuly replay to Rocket.Chat, and you need to examine Rocket.Chat logs, is any errors there?
