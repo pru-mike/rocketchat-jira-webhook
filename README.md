@@ -65,10 +65,10 @@ The Rocket.Chat configuration process should looking something like that
 - Set "Event Trigger" to "Message Sent"
 - Choose proper "Name (optional)" for integration, like "Jira Webhook"
 - Set "Channel" to all_direct_messages
-- Set URLs to YOUR rocketchat-jira-webhook with proper route like http://jira-webhook.mycorp.com/jira (see below)
+- Set URLs to YOUR rocketchat-jira-webhook with proper route like http://jira-webhook.mycorp.com:4567/jira (see below)
 - Set User to valid rocket chat user with bot rights
 - Erase Token (or save it and add to rocketchat-jira-webhook config file)
-- Click Save
+- Click Save and make sure there is no any error and configuration saved successfully
 
 There is three route you can point your Rocket.Chat instance  
 /jira - only jira issues would be summarized at this route  
@@ -92,4 +92,5 @@ Troubleshooting
 If something going wrong and you does not see replay from webhook, you should
 - Try to check /health url, is you connection ok?
 - Run application with log_level = "debug" and examine application log, is there any error?
-- If there is 'found jira keys' or 'found confluence ids' message and no any errors, then webhook successfuly replay to Rocket.Chat, and you need to examine Rocket.Chat logs, is any errors there?
+- If there is 'found jira keys' or 'found confluence ids' message and no any errors, then webhook successfully replay to Rocket.Chat, and you need to examine Rocket.Chat logs, is any errors there?
+- Additionaly you could try to run Rocket.Chat in isolated local environment with [Docker](https://docs.rocket.chat/quick-start/deploying-rocket.chat/rapid-deployment-methods/docker-and-docker-compose) with you version and config, it is far more easier to examine logs with this rather then on heavy load production instance
